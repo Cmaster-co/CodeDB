@@ -10,6 +10,8 @@ from conf import host,user,passwd,db,port
 
 class Base():
 	database = None
+	sql_where = ""
+	sql_select = "*"
 
 	def getdb():
 		#get connection from MySQLdb
@@ -21,9 +23,9 @@ class Base():
 		return conn
 
 
-	def insert(table, data):
+	def insert(self, table, data):
 		try:
-			cur=database.cursor()
+			cur = database.cursor()
 			sql = "INSERT INTO " + table + " ("
 			values = ")VAULES("
 			val = col = u''
@@ -36,30 +38,92 @@ class Base():
 
 			sql = sql + col[:-2] + values + val[:-2] + ")"
 			cur.execute(sql)
-
 			return True
 		except e:
 			print "ERROR: " + str(e)
-
 			return False
 
 
-	def update(table, data):
+	def update(self, table, data):
+		try:
+			cur = database.cursor()
+			sql = "UPDATE " + table + " SET"
+			for k,v in data.items():
+				if type(v) == type(''):
+					sql += " %s = '%s'"%(k,v)
+				else:
+					sql += " %s = %s" %(k,v)
+				sql += ","
+			sql = sql[:-1]
+			sql += self.sql_where
+			cur.execute(sql)
+			return True
+		except e:
+			print "ERROR: " + str(e)
+			return False
+		finally:
+			self.flush()
+
+
+
+	def delete(self, table):
+		try:
+			cur = database.cursor()
+			sql = "DELETE FROM " + table
+			sql += self.sql_where
+			cur.execute(sql)
+			return True
+		except e:
+			print "ERROR: " + str(e)
+			return False
+		finally:
+			self.flush()
+
+
+	def get(self, table):
+		try:
+			cur = database.cursor()
+			sql = "SELECT " + self.select + " FROM " + table + self.sql_where
+			result = cur.execute(sql)
+
+		except e:
+			print "ERROR: " + str(e)
+
+		finally:
+			self.flush()
+
+
+
+	def select(self, column):
+		self.sql_select = column
+
+
+	def where(self, column, data):
+		sql = " WHERE"
+		if type(data) == type(''):
+			sql += " %s = '%s'"%(column, data)
+		else:
+			sql += " %s = %s"%(column, data)
+		self.sql_where = sql
+
+
+	def flush(self):
+		self.sql_where = ""
+		self.sql_select = "*"
+
+
+	def and_where():
 		pass
 
-	def delete(table, data):
+
+	def or_where():
 		pass
 
-	def get(table):
+
+	def in_where():
 		pass
 
-	def select(column, data):
-		pass
 
-	def where(column, data):
+	def join():
 		pass
-
-	def flush():
-		pass
-
 
