@@ -80,9 +80,29 @@ class Base():
 			self.flush()
 
 
+	def get_column(table):
+		try:
+			columns = []
+			cur = database.cursor()
+			if  self.select == '*':
+				sql = "SHOW COLUMNS FROM " + table
+				cur.execute(sql)
+				columns = cur.fetchone()
+			else:
+				columns = self.select
+				columns = columns.replace(' ','')
+				columns = columns.split(',')
+		except:
+			print "ERROR: "
+
+		finally:
+			return columns
+
+
 	def get(self, table):
 		try:
 			cur = database.cursor()
+			
 			sql = "SELECT " + self.select + " FROM " + table + self.sql_where
 			result = cur.execute(sql)
 
