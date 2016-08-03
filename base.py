@@ -15,11 +15,14 @@ class Base():
 
 	def getdb():
 		#get connection from MySQLdb
-		conn=MySQLdb.connect(host=host,\
-							user=user,\
-							passwd=passwd,\
-							db=db,\
-							port=port)
+		try:
+			conn=MySQLdb.connect(host=host,\
+								user=user,\
+								passwd=passwd,\
+								db=db,\
+								port=port)
+		except Exception as e:
+			print "ERROR: ",e
 		return conn
 
 
@@ -39,7 +42,7 @@ class Base():
 			sql = sql + col[:-2] + values + val[:-2] + ")"
 			cur.execute(sql)
 			return True
-		except e:
+		except Exception as e:
 			print "ERROR: " + str(e)
 			return False
 
@@ -58,7 +61,7 @@ class Base():
 			sql += self.sql_where
 			cur.execute(sql)
 			return True
-		except e:
+		except Exception as e:
 			print "ERROR: " + str(e)
 			return False
 		finally:
@@ -73,7 +76,7 @@ class Base():
 			sql += self.sql_where
 			cur.execute(sql)
 			return True
-		except e:
+		except Exception as e:
 			print "ERROR: " + str(e)
 			return False
 		finally:
@@ -90,10 +93,11 @@ class Base():
 				columns = cur.fetchone()
 			else:
 				columns = self.select
-				columns = columns.replace(' ','')
-				columns = columns.split(',')
-		except:
-			print "ERROR: "
+
+			columns = columns.replace(' ','')
+			columns = columns.split(',')
+		except Exception as e:
+			print "ERROR: ",e
 
 		finally:
 			return columns
@@ -101,17 +105,23 @@ class Base():
 
 	def get(self, table):
 		try:
+			result = []
 			cur = database.cursor()
 			
 			sql = "SELECT " + self.select + " FROM " + table + self.sql_where
-			result = cur.execute(sql)
+			cur.execute(sql)
 
-		except e:
+			columns = get_column(table)
+
+			for row in cur.fetchall():
+				result.append(dict(zip(columns, row)))
+
+		except Exception as e:
 			print "ERROR: " + str(e)
 
 		finally:
 			self.flush()
-
+			return result
 
 
 	def select(self, column):
