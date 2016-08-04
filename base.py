@@ -12,9 +12,7 @@ class Base():
 	database = None
 	sql_where = ""
 	sql_select = "*"
-
-	def getdb():
-		#get connection from MySQLdb
+	def __init__():
 		try:
 			conn=MySQLdb.connect(host=host,\
 								user=user,\
@@ -23,7 +21,8 @@ class Base():
 								port=port)
 		except Exception as e:
 			print "ERROR: ",e
-		return conn
+		
+		self.database = coon
 
 
 	def insert(self, table, data):
