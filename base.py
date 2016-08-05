@@ -5,11 +5,12 @@
 
 import json
 import MySQLdb
+import logging
 
 from conf import host,user,passwd,db,port
 
 class Base():
-	database = None
+	db = None
 	sql_where = ""
 	sql_select = "*"
 	def __init__():
@@ -22,12 +23,12 @@ class Base():
 		except Exception as e:
 			print "ERROR: ",e
 		
-		self.database = coon
+		self.db = coon
 
 
 	def insert(self, table, data):
 		try:
-			cur = database.cursor()
+			cur = self.db.cursor()
 			sql = "INSERT INTO " + table + " ("
 			values = ")VAULES("
 			val = col = u''
@@ -48,7 +49,7 @@ class Base():
 
 	def update(self, table, data):
 		try:
-			cur = database.cursor()
+			cur = self.db.cursor()
 			sql = "UPDATE " + table + " SET"
 			for k,v in data.items():
 				if type(v) == type(''):
@@ -70,7 +71,7 @@ class Base():
 
 	def delete(self, table):
 		try:
-			cur = database.cursor()
+			cur = self.db.cursor()
 			sql = "DELETE FROM " + table
 			sql += self.sql_where
 			cur.execute(sql)
@@ -85,7 +86,7 @@ class Base():
 	def get_column(table):
 		try:
 			columns = []
-			cur = database.cursor()
+			cur = self.db.cursor()
 			if  self.select == '*':
 				sql = "SHOW COLUMNS FROM " + table
 				cur.execute(sql)
@@ -105,7 +106,7 @@ class Base():
 	def get(self, table):
 		try:
 			result = []
-			cur = database.cursor()
+			cur = self.db.cursor()
 			
 			sql = "SELECT " + self.select + " FROM " + table + self.sql_where
 			cur.execute(sql)
