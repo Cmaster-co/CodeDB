@@ -6,5 +6,5 @@
 host = 'localhost'
 user = 'root'
 passwd = 'root'
-db = 'test'
+db = 'Codedb'
 port = 3306

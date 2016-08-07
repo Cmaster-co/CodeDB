@@ -13,7 +13,7 @@ class Base():
 	db = None
 	sql_where = ""
 	sql_select = "*"
-	def __init__():
+	def __init__(self):
 		try:
 			conn=MySQLdb.connect(host=host,\
 								user=user,\
@@ -23,23 +23,27 @@ class Base():
 		except Exception as e:
 			print "ERROR: ",e
 		
-		self.db = coon
+		print "conn database succeed!"
+		self.db = conn
 
 
 	def insert(self, table, data):
 		try:
 			cur = self.db.cursor()
-			sql = "INSERT INTO " + table + " ("
+			sql = "INSERT INTO " + str(table) + " ("
 			values = ")VAULES("
 			val = col = u''
 			for k,v in data.items():
 				col += k + ', '
 				if type(v) == type(''):
-					val += "'"v + "', "
+					val += "'"+ str(v) + "', "
 				else:
 					val += v + ', '
 
 			sql = sql + col[:-2] + values + val[:-2] + ")"
+
+			print 'insert sql = ',str(sql)
+
 			cur.execute(sql)
 			return True
 		except Exception as e:
@@ -50,7 +54,7 @@ class Base():
 	def update(self, table, data):
 		try:
 			cur = self.db.cursor()
-			sql = "UPDATE " + table + " SET"
+			sql = "UPDATE " + str(table) + " SET"
 			for k,v in data.items():
 				if type(v) == type(''):
 					sql += " %s = '%s'"%(k,v)
@@ -58,7 +62,10 @@ class Base():
 					sql += " %s = %s" %(k,v)
 				sql += ","
 			sql = sql[:-1]
-			sql += self.sql_where
+			sql += str(self.sql_where)
+
+			print 'update sql = ',sql
+
 			cur.execute(sql)
 			return True
 		except Exception as e:
@@ -74,6 +81,9 @@ class Base():
 			cur = self.db.cursor()
 			sql = "DELETE FROM " + table
 			sql += self.sql_where
+
+			print 'delete sql = ',sql
+
 			cur.execute(sql)
 			return True
 		except Exception as e:
@@ -83,19 +93,21 @@ class Base():
 			self.flush()
 
 
-	def get_column(table):
+	def get_column(self,table):
 		try:
 			columns = []
 			cur = self.db.cursor()
-			if  self.select == '*':
+			if  self.sql_select == '*':
 				sql = "SHOW COLUMNS FROM " + table
 				cur.execute(sql)
-				columns = cur.fetchone()
+				col = cur.fetchall()
+				for i in col:
+					columns.append(i[0])
 			else:
-				columns = self.select
-
-			columns = columns.replace(' ','')
-			columns = columns.split(',')
+				columns = self.sql_select
+				columns = columns.replace(' ','')
+				columns = columns.split(',')
+			
 		except Exception as e:
 			print "ERROR: ",e
 
@@ -108,10 +120,15 @@ class Base():
 			result = []
 			cur = self.db.cursor()
 			
-			sql = "SELECT " + self.select + " FROM " + table + self.sql_where
+			print 'get db cursor succeed!'
+
+			sql = "SELECT " + str(self.sql_select) + " FROM " + str(table) + str(self.sql_where)
+
+			print 'select sql = ',str(sql)
+
 			cur.execute(sql)
 
-			columns = get_column(table)
+			columns = self.get_column(table)
 
 			for row in cur.fetchall():
 				result.append(dict(zip(columns, row)))
