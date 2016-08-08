@@ -7,7 +7,7 @@ import json
 import MySQLdb
 import logging
 
-from conf import host,user,passwd,db,port
+from conf import mysql
 
 class Base():
 	db = None
@@ -15,11 +15,11 @@ class Base():
 	sql_select = "*"
 	def __init__(self):
 		try:
-			conn=MySQLdb.connect(host=host,\
-								user=user,\
-								passwd=passwd,\
-								db=db,\
-								port=port)
+			conn=MySQLdb.connect(host=mysql['host'],\
+								user=mysql['user'],\
+								passwd=mysql['passwd'],\
+								db=mysql['db'],\
+								port=mysql['port'])
 		except Exception as e:
 			print "ERROR: ",e
 		
@@ -31,7 +31,7 @@ class Base():
 		try:
 			cur = self.db.cursor()
 			sql = "INSERT INTO " + str(table) + " ("
-			values = ")VAULES("
+			values = ")VALUES("
 			val = col = u''
 			for k,v in data.items():
 				col += k + ', '
@@ -45,6 +45,7 @@ class Base():
 			print 'insert sql = ',str(sql)
 
 			cur.execute(sql)
+			self.db.commit()
 			return True
 		except Exception as e:
 			print "ERROR: " + str(e)
@@ -67,6 +68,7 @@ class Base():
 			print 'update sql = ',sql
 
 			cur.execute(sql)
+			self.db.commit()
 			return True
 		except Exception as e:
 			print "ERROR: " + str(e)
@@ -85,6 +87,7 @@ class Base():
 			print 'delete sql = ',sql
 
 			cur.execute(sql)
+			self.db.commit()
 			return True
 		except Exception as e:
 			print "ERROR: " + str(e)
@@ -98,7 +101,7 @@ class Base():
 			columns = []
 			cur = self.db.cursor()
 			if  self.sql_select == '*':
-				sql = "SHOW COLUMNS FROM " + table
+				sql = "SHOW COLUMNS FROM " + str(table)
 				cur.execute(sql)
 				col = cur.fetchall()
 				for i in col:
@@ -127,7 +130,7 @@ class Base():
 			print 'select sql = ',str(sql)
 
 			cur.execute(sql)
-
+			self.db.commit()
 			columns = self.get_column(table)
 
 			for row in cur.fetchall():
@@ -159,15 +162,15 @@ class Base():
 		self.sql_select = "*"
 
 
-	def and_where():
+	def and_where(self, columns, data):
 		pass
 
 
-	def or_where():
+	def or_where(self, columns, data):
 		pass
 
 
-	def in_where():
+	def in_where(self, columns, data):
 		pass
 
 

@@ -11,3 +11,12 @@ d = c.get('test')
 
 for i in d:
 	print i
+
+e = {'name':'Mike', 'phone':'12345', 'address':'Canada'}
+
+c.insert('test',e)
+
+d = c.get('test')
+
+for i in d:
+	print i
